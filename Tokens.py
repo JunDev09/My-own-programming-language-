@@ -1,0 +1,16 @@
+class TokenTypes:
+    EOF = 'EOF'
+    INTEGER = 'INTEGER'
+    FLOAT = 'FLOAT'
+    STRING = 'STRING'
+    BOOLEAN = 'BOOLEAN'
+    PLUS = 'PLUS'
+    MINUS = 'MINUS'
+    STAR = 'STAR'
+    SLASH = 'SLASH'
+    EQUAL = 'EQUAL'
+    RPAREN = 'RPAREN'
+    LPAREN = 'LPAREN'
+    SEMI = 'SEMI'
+    
+    IDENTIFIER = 'IDENTIFIER'

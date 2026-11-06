@@ -1,18 +1,5 @@
-EOF = 'EOF'
-INTEGER = 'INTEGER'
-FLOAT = 'FLOAT'
-STRING = 'STRING'
-BOOLEAN = 'BOOLEAN'
-PLUS = 'PLUS'
-MINUS = 'MINUS'
-STAR = 'STAR'
-SLASH = 'SLASH'
-EQUAL = 'EQUAL'
-RPAREN = 'RPAREN'
-LPAREN = 'LPAREN'
-SEMI = 'SEMI'
+from Tokens import TokenTypes
 
-IDENTIFIER = 'IDENTIFIER'
 
 class Token(object):
     def __init__(self, type, value):
@@ -20,7 +7,7 @@ class Token(object):
         self.value = value
     
     def __str__(self):
-        return "\nToken({type}, {value})\n".format(type = self.type, value = repr(self.value))
+        return f"Token({self.type}, {self.value})"
         
     def __repr__(self):
         return self.__str__()
@@ -71,11 +58,11 @@ class Lexer(object):
                 letters = self.src[start:self.pos]
                     
                 if letters == "true":
-                    tokens.append(Token(BOOLEAN, True))
+                    tokens.append(Token(TokenTypes.BOOLEAN, True))
                 elif letters == "false":
-                    tokens.append(Token(BOOLEAN, False))
+                    tokens.append(Token(TokenTypes.BOOLEAN, False))
                 else:
-                    tokens.append(Token(IDENTIFIER, str(letters)))
+                    tokens.append(Token(TokenTypes.IDENTIFIER, str(letters)))
                 
                 continue
                 
@@ -100,11 +87,11 @@ class Lexer(object):
                         print("Error")
                         break
                         
-                    tokens.append(Token(FLOAT, float(digits)))
+                    tokens.append(Token(TokenTypes.FLOAT, float(digits)))
                         
                 elif has_dot is not True:
                     digits = self.src[start:self.pos]
-                    tokens.append(Token(INTEGER, int(digits)))
+                    tokens.append(Token(TokenTypes.INTEGER, int(digits)))
                     
                 else:
                     print("error")
@@ -113,42 +100,42 @@ class Lexer(object):
                 
                 
             elif current == '+':
-                tokens.append(Token(PLUS, '+'))
+                tokens.append(Token(TokenTypes.PLUS, '+'))
                 self.advance()
                 continue
                 
                 
             elif current == '-':
-                tokens.append(Token(MINUS, '-'))
+                tokens.append(Token(TokenTypes.MINUS, '-'))
                 self.advance()
                 continue
                 
                 
             elif current == '*':
-                tokens.append(Token(STAR, '*'))
+                tokens.append(Token(TokenTypes.STAR, '*'))
                 self.advance()
                 continue
             
             
             elif current == '/':
-                tokens.append(Token(SLASH, '/'))
+                tokens.append(Token(TokenTypes.SLASH, '/'))
                 self.advance()
                 continue
                 
                 
             elif current == '(':
-                tokens.append(Token(LPAREN, '('))
+                tokens.append(Token(TokenTypes.LPAREN, '('))
                 self.advance()
                 continue
                 
                 
             elif current == ')':
-                tokens.append(Token(RPAREN, ')'))
+                tokens.append(Token(TokenTypes.RPAREN, ')'))
                 self.advance()
                 continue
                 
             elif current == '=':
-                tokens.append(Token(EQUAL, '='))
+                tokens.append(Token(TokenTypes.EQUAL, '='))
                 self.advance()
                 continue
             
@@ -165,7 +152,7 @@ class Lexer(object):
                 
                 if self.peek() == quote_mark:
                     letters = self.src[start:self.pos]
-                    tokens.append(Token(STRING, str(letters)))
+                    tokens.append(Token(TokenTypes.STRING, letters))
                     self.advance()
                 else:
                     print("bro there's no closing clauses for your string value, fix it bruh")
@@ -174,7 +161,7 @@ class Lexer(object):
             
                 
             elif current == ';':
-                tokens.append(Token(SEMI, ';'))
+                tokens.append(Token(TokenTypes.SEMI, ';'))
                 self.advance()
                 continue
                        
@@ -182,7 +169,7 @@ class Lexer(object):
                 self.advance()
                 
             
-        tokens.append(Token(EOF, None))     
+        tokens.append(Token(TokenTypes.EOF, None))     
         return tokens
         
         
