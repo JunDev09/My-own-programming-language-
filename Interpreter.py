@@ -11,6 +11,7 @@ class Interpreter():
                 value = node.value
                 number = value
                 return number
+                
             case BinOp():
                 left = self.visit_node(node.left)
                 right = self.visit_node(node.right)
@@ -24,6 +25,11 @@ class Interpreter():
                         return left * right
                     case TokenTypes.SLASH:
                         return left / right
+                        
+            case Unary():
+                unary_operand = self.visit_node(node.operand)
+                if node.operator.type == TokenTypes.MINUS:
+                    return -unary_operand
                 
 if __name__ == "__main__":
     while True:
