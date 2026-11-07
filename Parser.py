@@ -7,6 +7,9 @@ class BinOp(object):
         self.op = op
         self.right = right
         
+    def __repr__(self):
+        return f"Node({self.left}, {self.op}, {self.right})"
+        
 
 class Num(object):
     def __init__(self, value):
@@ -15,13 +18,69 @@ class Num(object):
     def __repr__(self):
         return f"Num({self.value})"
         
+
+class Parser(object):
+    def __init__(self, tokenlist):
+        self.tokenlist = tokenlist
+        self.pos = -1
+        self.advance()
+        
+        
+    def advance(self):
+        self.pos += 1
+        
+        if self.pos < len(self.tokenlist):
+            self.current_token = self.tokenlist[self.pos]
+        else:
+            self.current_token = None
+        return self.current_token
+        
+        
+    def factor(self):
+        token = self.current_token
+        
+        if token.type in (TokenTypes.INTEGER, TokenTypes.FLOAT):
+            self.advance()
+            return Num(token.value)
+            
+            
+    def term(self):
+        return self.BinaryOp(self.factor, (TokenTypes.STAR, TokenTypes.SLASH))
+        
+        
+    def expression(self):
+        return self.BinaryOp(self.term, (TokenTypes.PLUS, TokenTypes.MINUS))
+        
+        
+    def BinaryOp(self, func, ops):
+        left = func()
+        
+        if self.current_token is not None:
+            while self.current_token.type in ops:
+                op_token = self.current_token
+                self.advance()
+                right = func()
+                left = BinOp(left, op_token, right)
+        return left
+        
+        
+    def parse(self):
+        res = self.expression()
+        return res
+                
+                
+        
+        
+        
         
 if __name__ == "__main__":
-    while True:
+    while True:       
         text = input(">> ")
         
         if text == "exit":
             break
+            
+        parser = Parser(Lexer(text).tokenize())
+        ast = parser.parse()
         
-        print(Lexer(text).tokenize())
-        print(Num(Lexer(text).tokenize()))
+        print(ast)
