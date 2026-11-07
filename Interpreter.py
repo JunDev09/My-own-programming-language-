@@ -1,8 +1,12 @@
-from Parser import Num, Unary, BinOp, Parser
+from Parser import Num, Unary, BinOp, Boolean, String, Identifier, Assignment, Parser
 from Lexer import Lexer
 from Tokens import TokenTypes
 
 class Interpreter():
+    def __init__(self):
+        self.variables = {}
+        
+        
     def visit_node(self, node):
         
         match node:
@@ -30,8 +34,28 @@ class Interpreter():
                 unary_operand = self.visit_node(node.operand)
                 if node.operator.type == TokenTypes.MINUS:
                     return -unary_operand
+                    
+            case Boolean():
+                return node.value
+                
+            case String():
+                return node.value
+                
+            case Identifier():
+                if node.name in self.variables:
+                    return self.variables[node.name]
+                else:
+                    raise Exception(f"Variable {node.name} doesn't exist")
+                
+            case Assignment():
+                value = self.visit_node(node.value)
+                result = self.variables[node.name] = value
+                return result
+                
                 
 if __name__ == "__main__":
+    interpreter = Interpreter()
+    
     while True:
         text = input(">> ")
         
@@ -40,6 +64,5 @@ if __name__ == "__main__":
             
         tokens = Lexer(text).tokenize()
         tree = Parser(tokens).parse()
-        interpreter = Interpreter()
         result = interpreter.visit_node(tree)
         print(result)        

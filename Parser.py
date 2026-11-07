@@ -21,13 +21,45 @@ class BinOp(object):
         return f"Node({self.left}, {self.op}, {self.right})"
         
 
+class Assignment(object):
+    def __init__(self, name, value):
+        self.name = name
+        self.value = value
+        
+    def __repr__(self):
+        return f"Name:{self.name}\nValue:{self.value}"
+        
+
 class Num(object):
     def __init__(self, value):
         self.value = value
         
     def __repr__(self):
         return f"Num({self.value})"
+    
+
+class Boolean(object):
+    def __init__(self, value):
+        self.value = value
         
+    def __repr__(self):
+        return f"Bool({self.value})"
+        
+class String(object):
+    def __init__(self, value):
+        self.value = value
+        
+    def __repr__(self):
+        return f"String({self.value})"
+        
+
+class Identifier(object):
+    def __init__(self, name):
+        self.name = name
+        
+    def __repr__(self):
+        return f"Identifier({self.name})"
+
 
 class Parser(object):
     def __init__(self, tokenlist):
@@ -62,6 +94,17 @@ class Parser(object):
                 #error
                 print("Error, expected ')'")
                 
+                
+        elif token.type == TokenTypes.BOOLEAN:
+            self.advance()
+            return Boolean(token.value)
+        elif token.type == TokenTypes.STRING:
+            self.advance()
+            return String(token.value)
+        elif token.type == TokenTypes.IDENTIFIER:
+            self.advance()
+            return Identifier(token.value)
+                
         
     def unary(self):
         token = self.current_token
@@ -82,6 +125,17 @@ class Parser(object):
     def expression(self):
         return self.BinaryOp(self.term, (TokenTypes.PLUS, TokenTypes.MINUS))
         
+    
+    def assignment(self):
+        left = self.expression()
+        if self.current_token is None or self.current_token.type != TokenTypes.EQUAL:
+            return left
+        else:
+            self.advance()
+            right = self.assignment()
+            
+        return Assignment(left.name, right)
+        
         
     def BinaryOp(self, func, ops):
         left = func()
@@ -99,7 +153,7 @@ class Parser(object):
         
         
     def parse(self):
-        res = self.expression()
+        res = self.assignment()
         return res
                 
                 
