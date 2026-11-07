@@ -84,6 +84,7 @@ class Lexer(object):
                     digits = self.src[start:self.pos]
                         
                     if digits == '.':
+                        #error
                         print("Error")
                         break
                         
@@ -94,6 +95,7 @@ class Lexer(object):
                     tokens.append(Token(TokenTypes.INTEGER, int(digits)))
                     
                 else:
+                    #error
                     print("error")
                     
                 continue
@@ -155,6 +157,7 @@ class Lexer(object):
                     tokens.append(Token(TokenTypes.STRING, letters))
                     self.advance()
                 else:
+                    #error
                     print("bro there's no closing clauses for your string value, fix it bruh")
                 
                 continue

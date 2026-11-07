@@ -1,6 +1,16 @@
 from Tokens import TokenTypes
 from Lexer import Lexer, Token
 
+
+class Unary(object):
+    def __init__(self, operator, operand):
+        self.operator = operator
+        self.operand = operand
+        
+    def __repr__(self):
+        return f"Unary({self.operator}, {self.operand})"
+        
+
 class BinOp(object):
     def __init__(self, left, op, right):
         self.left = left
@@ -42,10 +52,31 @@ class Parser(object):
         if token.type in (TokenTypes.INTEGER, TokenTypes.FLOAT):
             self.advance()
             return Num(token.value)
+        elif token.type == TokenTypes.LPAREN:
+            self.advance()
+            result = self.expression()
+            if self.current_token.type == TokenTypes.RPAREN:
+                self.advance()
+                return result
+            else:
+                #error
+                print("Error, expected ')'")
+                
+        
+    def unary(self):
+        token = self.current_token
+            
+        if self.current_token.type == TokenTypes.MINUS:
+            unary_op = self.current_token
+            self.advance()
+            result = self.unary()
+            return Unary(unary_op, result)
+        else:
+            return self.factor()
             
             
     def term(self):
-        return self.BinaryOp(self.factor, (TokenTypes.STAR, TokenTypes.SLASH))
+        return self.BinaryOp(self.unary, (TokenTypes.STAR, TokenTypes.SLASH))
         
         
     def expression(self):
@@ -61,6 +92,9 @@ class Parser(object):
                 self.advance()
                 right = func()
                 left = BinOp(left, op_token, right)
+        else:
+            pass
+            
         return left
         
         
