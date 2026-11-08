@@ -137,10 +137,57 @@ class Lexer(object):
                 continue
                 
             elif current == '=':
-                tokens.append(Token(TokenTypes.EQUAL, '='))
+                next_char = self.peek(1)
                 self.advance()
+                
+                if next_char == '=':
+                    tokens.append(Token(TokenTypes.EQUAL_TO, '=='))
+                    self.advance()
+                    
+                else: 
+                    tokens.append(Token(TokenTypes.EQUAL, '='))
+                    
                 continue
+                
+                
+            elif current == '!':
+                next_char = self.peek(1)
+                self.advance()
+                
+                if next_char == '=':
+                    tokens.append(Token(TokenTypes.NOT_EQUAL, '!='))
+                    self.advance()
+                else:
+                    tokens.append(Token(TokenTypes.UNARY_NOT, '!'))
+                    
+                continue
+                
             
+            elif current == '<':
+                next_char = self.peek(1)
+                self.advance()
+                
+                if next_char == '=':
+                    tokens.append(Token(TokenTypes.LESSER_EQUAL, '<='))
+                    self.advance()
+                else:
+                    tokens.append(Token(TokenTypes.LESSER_OP, '<'))
+                    
+                continue
+                
+                
+            elif current == '>':
+                next_char = self.peek(1)
+                self.advance()
+                
+                if next_char == '=':
+                    tokens.append(Token(TokenTypes.GREATER_EQUAL, '>='))
+                    self.advance()
+                else:
+                    tokens.append(Token(TokenTypes.GREATER_OP, '>'))
+                    
+                continue
+                
             
             elif current == '"':
                 quote_mark = '"'

@@ -29,11 +29,25 @@ class Interpreter():
                         return left * right
                     case TokenTypes.SLASH:
                         return left / right
+                    case TokenTypes.EQUAL_TO:
+                        return left == right
+                    case TokenTypes.NOT_EQUAL:
+                        return left != right
+                    case TokenTypes.GREATER_OP:
+                        return left > right
+                    case TokenTypes.LESSER_OP:
+                        return left < right
+                    case TokenTypes.GREATER_EQUAL:
+                        return left >= right
+                    case TokenTypes.LESSER_EQUAL:
+                        return left <= right
                         
             case Unary():
                 unary_operand = self.visit_node(node.operand)
                 if node.operator.type == TokenTypes.MINUS:
                     return -unary_operand
+                elif node.operator.type == TokenTypes.UNARY_NOT:
+                    return not unary_operand
                     
             case Boolean():
                 return node.value

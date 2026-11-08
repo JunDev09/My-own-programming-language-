@@ -84,9 +84,10 @@ class Parser(object):
         if token.type in (TokenTypes.INTEGER, TokenTypes.FLOAT):
             self.advance()
             return Num(token.value)
+            
         elif token.type == TokenTypes.LPAREN:
             self.advance()
-            result = self.expression()
+            result = self.assignment()
             if self.current_token.type == TokenTypes.RPAREN:
                 self.advance()
                 return result
@@ -106,10 +107,8 @@ class Parser(object):
             return Identifier(token.value)
                 
         
-    def unary(self):
-        token = self.current_token
-            
-        if self.current_token.type == TokenTypes.MINUS:
+    def unary(self): 
+        if self.current_token.type in (TokenTypes.MINUS, TokenTypes.UNARY_NOT):
             unary_op = self.current_token
             self.advance()
             result = self.unary()
@@ -125,9 +124,13 @@ class Parser(object):
     def expression(self):
         return self.BinaryOp(self.term, (TokenTypes.PLUS, TokenTypes.MINUS))
         
+        
+    def comparison(self):
+        return self.BinaryOp(self.expression, (TokenTypes.EQUAL_TO, TokenTypes.NOT_EQUAL, TokenTypes.LESSER_OP, TokenTypes.GREATER_OP, TokenTypes.LESSER_EQUAL, TokenTypes.GREATER_EQUAL))
+        
     
     def assignment(self):
-        left = self.expression()
+        left = self.comparison()
         if self.current_token is None or self.current_token.type != TokenTypes.EQUAL:
             return left
         else:
