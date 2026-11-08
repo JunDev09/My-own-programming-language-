@@ -57,12 +57,17 @@ class Lexer(object):
                 
                 letters = self.src[start:self.pos]
                     
-                if letters == "true":
-                    tokens.append(Token(TokenTypes.BOOLEAN, True))
-                elif letters == "false":
-                    tokens.append(Token(TokenTypes.BOOLEAN, False))
-                else:
-                    tokens.append(Token(TokenTypes.IDENTIFIER, str(letters)))
+                match letters:
+                    case "true":
+                        tokens.append(Token(TokenTypes.BOOLEAN, True))
+                    case "false":
+                        tokens.append(Token(TokenTypes.BOOLEAN, False))
+                    case "or":
+                        tokens.append(Token(TokenTypes.OR, 'or'))
+                    case "and":
+                        tokens.append(Token(TokenTypes.AND, 'and'))
+                    case _:
+                        tokens.append(Token(TokenTypes.IDENTIFIER, str(letters)))
                 
                 continue
                 

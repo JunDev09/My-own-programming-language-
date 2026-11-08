@@ -18,10 +18,18 @@ class TokenTypes:
     #UNARY
     UNARY_NOT = 'UNARY_NOT'
     
-    #COMAPARISON
+    #COMPARISON
     EQUAL_TO = 'EQUAL_TO'
     NOT_EQUAL = 'NOT_EQUAL'
     LESSER_OP = 'LESSER_OP'
     GREATER_OP = 'GREATER_OP'
     LESSER_EQUAL = 'LESSER_EQUAL'
     GREATER_EQUAL = 'GREATER_EQUAL'
+    
+    #LOGICAL
+    AND = 'AND'
+    OR = 'OR'
+    
+    #RESERVED KEYWORDS
+    IF = 'IF'
+    ELSE = 'ELSE'

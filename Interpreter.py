@@ -1,4 +1,4 @@
-from Parser import Num, Unary, BinOp, Boolean, String, Identifier, Assignment, Parser
+from Parser import Num, Unary, BinOp, Boolean, String, Identifier, Assignment, Block, Parser
 from Lexer import Lexer
 from Tokens import TokenTypes
 
@@ -41,6 +41,10 @@ class Interpreter():
                         return left >= right
                     case TokenTypes.LESSER_EQUAL:
                         return left <= right
+                    case TokenTypes.OR:
+                        return left or right
+                    case TokenTypes.AND:
+                        return left and right
                         
             case Unary():
                 unary_operand = self.visit_node(node.operand)
@@ -60,6 +64,13 @@ class Interpreter():
                     return self.variables[node.name]
                 else:
                     raise Exception(f"Variable {node.name} doesn't exist")
+                
+            case Block():
+                List = node.list
+                latestRes = None
+                for statement in List:
+                    latestRes = self.visit_node(statement)
+                return latestRes
                 
             case Assignment():
                 value = self.visit_node(node.value)

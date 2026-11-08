@@ -45,6 +45,7 @@ class Boolean(object):
     def __repr__(self):
         return f"Bool({self.value})"
         
+        
 class String(object):
     def __init__(self, value):
         self.value = value
@@ -59,6 +60,14 @@ class Identifier(object):
         
     def __repr__(self):
         return f"Identifier({self.name})"
+        
+        
+class Block(object):
+    def __init__(self, statementlist):
+        self.list = statementlist
+        
+    def __repr__(self):
+        return f"Block({self.list})"
 
 
 class Parser(object):
@@ -128,9 +137,17 @@ class Parser(object):
     def comparison(self):
         return self.BinaryOp(self.expression, (TokenTypes.EQUAL_TO, TokenTypes.NOT_EQUAL, TokenTypes.LESSER_OP, TokenTypes.GREATER_OP, TokenTypes.LESSER_EQUAL, TokenTypes.GREATER_EQUAL))
         
+        
+    def And(self):
+        return self.BinaryOp(self.comparison, TokenTypes.AND)
+        
+    
+    def Or(self):
+        return self.BinaryOp(self.And, TokenTypes.OR)
+        
     
     def assignment(self):
-        left = self.comparison()
+        left = self.Or()
         if self.current_token is None or self.current_token.type != TokenTypes.EQUAL:
             return left
         else:
@@ -138,6 +155,22 @@ class Parser(object):
             right = self.assignment()
             
         return Assignment(left.name, right)
+        
+        
+    def statement(self):
+        result = self.assignment()
+        if self.current_token.type == TokenTypes.SEMI:
+            self.advance()
+            return result
+        else:
+            raise Exception("SyntaxError: Missing ';' ")
+            
+    def program(self):
+        resList = []
+        while self.current_token.type != TokenTypes.EOF:
+            result = self.statement()
+            resList.append(result)
+        return Block(resList)
         
         
     def BinaryOp(self, func, ops):
@@ -156,7 +189,7 @@ class Parser(object):
         
         
     def parse(self):
-        res = self.assignment()
+        res = self.program()
         return res
                 
                 
