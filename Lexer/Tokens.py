@@ -1,18 +1,40 @@
 class TokenTypes:
-    EOF = 'EOF'
+    #DATA TYPES
     INTEGER = 'INTEGER'
     FLOAT = 'FLOAT'
     STRING = 'STRING'
     BOOLEAN = 'BOOLEAN'
+    
+    #STATIC TYPES
+    INTEGER_TYPE = 'INT_TYPE'
+    FLOAT_TYPE = 'FLOAT_TYPE'
+    STRING_TYPE = 'STR_TYPE'
+    BOOLEAN_TYPE = 'BOOL_TYPE'
+    
+    #ARITHMETIC OPERATORS
     PLUS = 'PLUS'
     MINUS = 'MINUS'
     STAR = 'STAR'
     SLASH = 'SLASH'
     EQUAL = 'EQUAL'
-    RPAREN = 'RPAREN'
-    LPAREN = 'LPAREN'
+    PLUS_ASSIGN = 'PLUS ASSIGN'
+    MINUS_ASSIGN = 'MINUS ASSIGN'
+    
+    #END OF FILE
+    EOF = 'EOF'
+    
+    #SYNTAX
     SEMI = 'SEMI'
     
+    #PRECEDENCE MODIFIER
+    RPAREN = 'RPAREN'
+    LPAREN = 'LPAREN'
+    
+    #STATEMENT BODY
+    RBRACE = 'RBRACE'
+    LBRACE = 'LBRACE'
+    
+    #VARIABLE
     IDENTIFIER = 'IDENTIFIER'
     
     #UNARY
@@ -30,6 +52,13 @@ class TokenTypes:
     AND = 'AND'
     OR = 'OR'
     
+    #STATEMENT
+    STATEMENT = 'STATEMENT'
+    
     #RESERVED KEYWORDS
-    IF = 'IF'
-    ELSE = 'ELSE'
+    IF = 'KEYWORD_IF'
+    ELSE = 'KEYWORD_ELSE'
+
+
+if __name__ == '__main__':
+    pass

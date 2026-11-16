@@ -1,6 +1,7 @@
-from Parser import Num, Unary, BinOp, Boolean, String, Identifier, Assignment, Block, Parser
-from Lexer import Lexer
-from Tokens import TokenTypes
+from Parser.Parser import Num, Unary, BinOp, Boolean, String, Identifier, Assignment, Block, ifNode, Parser
+from Lexer.Lexer import Lexer
+from Lexer.Tokens import TokenTypes
+from Errors.ErrorClasses import Lang_RuntimeError
 
 class Interpreter():
     def __init__(self):
@@ -8,7 +9,7 @@ class Interpreter():
         
         
     def visit_node(self, node):
-        
+  
         match node:
             
             case Num():
@@ -63,7 +64,18 @@ class Interpreter():
                 if node.name in self.variables:
                     return self.variables[node.name]
                 else:
-                    raise Exception(f"Variable {node.name} doesn't exist")
+                    raise Lang_RuntimeError(f"Variable '{node.name}' does not exist")
+                    
+            case ifNode():
+                condition = self.visit_node(node.condition)
+                if condition:
+                    result = self.visit_node(node.thenBody)
+                    return result
+                elif node.elseBody is not None:
+                    result = self.visit_node(node.elseBody)
+                    return result
+                else:
+                    return None
                 
             case Block():
                 List = node.list
@@ -74,7 +86,16 @@ class Interpreter():
                 
             case Assignment():
                 value = self.visit_node(node.value)
-                result = self.variables[node.name] = value
+                match node.op:
+                    case TokenTypes.EQUAL:
+                        new_value = value 
+                    case TokenTypes.PLUS_ASSIGN:
+                        new_value = self.variables[node.name] + value
+                    case TokenTypes.MINUS_ASSIGN:
+                        new_value = self.variables[node.name] - value
+                    case _:
+                        new_value = value
+                result = self.variables[node.name] = new_value
                 return result
                 
                 

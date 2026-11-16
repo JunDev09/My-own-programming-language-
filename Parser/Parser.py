@@ -1,6 +1,6 @@
-from Tokens import TokenTypes
-from Lexer import Lexer, Token
-
+from Lexer.Tokens import TokenTypes
+from Lexer.Lexer import Lexer
+from Errors.ErrorClasses import Lang_SyntaxError
 
 class Unary(object):
     def __init__(self, operator, operand):
@@ -22,9 +22,10 @@ class BinOp(object):
         
 
 class Assignment(object):
-    def __init__(self, name, value):
+    def __init__(self, name, value, op):
         self.name = name
         self.value = value
+        self.op = op
         
     def __repr__(self):
         return f"Name:{self.name}\nValue:{self.value}"
@@ -68,6 +69,16 @@ class Block(object):
         
     def __repr__(self):
         return f"Block({self.list})"
+        
+
+class ifNode(object):
+    def __init__(self, condition, thenBody, elseBody):
+        self.condition = condition
+        self.thenBody = thenBody
+        self.elseBody = elseBody
+        
+    def __repr__(self):
+        return f"IF: ({self.condition}, {self.thenBody}, {self.elseBody})"
 
 
 class Parser(object):
@@ -97,12 +108,8 @@ class Parser(object):
         elif token.type == TokenTypes.LPAREN:
             self.advance()
             result = self.assignment()
-            if self.current_token.type == TokenTypes.RPAREN:
-                self.advance()
-                return result
-            else:
-                #error
-                print("Error, expected ')'")
+            return result
+            
                 
                 
         elif token.type == TokenTypes.BOOLEAN:
@@ -148,22 +155,66 @@ class Parser(object):
     
     def assignment(self):
         left = self.Or()
-        if self.current_token is None or self.current_token.type != TokenTypes.EQUAL:
+        if self.current_token is None or self.current_token.type not in (TokenTypes.EQUAL, TokenTypes.PLUS_ASSIGN, TokenTypes.MINUS_ASSIGN):
             return left
         else:
+            op = self.current_token
             self.advance()
             right = self.assignment()
             
-        return Assignment(left.name, right)
+            
+        return Assignment(left.name, right, op.type)
         
         
     def statement(self):
+        if self.current_token.type == TokenTypes.IF:
+            return self.ifStatement()
+            
         result = self.assignment()
+        
         if self.current_token.type == TokenTypes.SEMI:
             self.advance()
             return result
         else:
-            raise Exception("SyntaxError: Missing ';' ")
+            raise Lang_SyntaxError("Expected ';' ", self.current_token.line)
+            
+        
+    def ifStatement(self):
+        self.advance()
+        if self.current_token.type == TokenTypes.LPAREN:
+            self.advance()
+            condition = self.assignment()
+        if self.current_token.type == TokenTypes.RPAREN:
+            self.advance()
+            
+        thenResult = self.statementBlock()
+        
+        if self.current_token.type == TokenTypes.ELSE:
+            self.advance()
+            
+            elseResult = self.statementBlock()
+        else:
+            elseResult = None
+            
+        return ifNode(condition, thenResult, elseResult)
+            
+    def statementBlock(self):
+        resList = []
+        if self.current_token.type != TokenTypes.LBRACE:
+            raise Lang_SyntaxError("Expected opening '('", self.current_token.line)
+        else:
+            self.advance()
+        
+        while self.current_token.type != TokenTypes.RBRACE:
+            result = self.statement()
+            resList.append(result)
+        self.advance()
+        
+        if self.current_token.type != TokenTypes.RBRACE:
+            raise Lang_SyntaxError("Expected closing ')'", self.current_token.line)
+            
+        return Block(resList)
+        
             
     def program(self):
         resList = []
