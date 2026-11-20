@@ -58,6 +58,7 @@ class TokenTypes:
     #RESERVED KEYWORDS
     IF = 'KEYWORD_IF'
     ELSE = 'KEYWORD_ELSE'
+    WHILE = 'KEYWORD_WHILE'
 
 
 if __name__ == '__main__':

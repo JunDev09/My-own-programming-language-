@@ -30,6 +30,16 @@ class Assignment(object):
     def __repr__(self):
         return f"Name:{self.name}\nValue:{self.value}"
         
+        
+class TypeDeclaration(object):
+    def __init__(self, type_name, name, value):
+        self.type_name = type_name
+        self.name = name
+        self.value = value
+        
+    def __repr__(self):
+        return f"TYPE: {self.type_name}, NAME: {self.name}, VALUE: {self.value}"
+        
 
 class Num(object):
     def __init__(self, value):
@@ -81,6 +91,15 @@ class ifNode(object):
         return f"IF: ({self.condition}, {self.thenBody}, {self.elseBody})"
 
 
+class whileNode(object):
+    def __init__(self, condition, thenBody):
+        self.condition = condition
+        self.thenBody = thenBody
+        
+    def __repr__(self):
+        return f"WHILE: ({self.condition})"
+
+
 class Parser(object):
     def __init__(self, tokenlist):
         self.tokenlist = tokenlist
@@ -109,8 +128,6 @@ class Parser(object):
             self.advance()
             result = self.assignment()
             return result
-            
-                
                 
         elif token.type == TokenTypes.BOOLEAN:
             self.advance()
@@ -162,13 +179,25 @@ class Parser(object):
             self.advance()
             right = self.assignment()
             
-            
+        
         return Assignment(left.name, right, op.type)
         
         
+    def typeDeclaration(self):
+        type_name = self.current_token.type          
+        self.advance()  
+        assignValue = self.assignment()
+        return TypeDeclaration(type_name, assignValue.name, assignValue.value)
+        
+        
     def statement(self):
+        if self.current_token.type in (TokenTypes.INTEGER_TYPE, TokenTypes.FLOAT_TYPE, TokenTypes.STRING_TYPE, TokenTypes.BOOLEAN_TYPE):
+            return self.typeDeclaration()
+            
         if self.current_token.type == TokenTypes.IF:
             return self.ifStatement()
+        elif self.current_token.type == TokenTypes.WHILE:
+            return self.whileStatement()
             
         result = self.assignment()
         
@@ -197,22 +226,36 @@ class Parser(object):
             elseResult = None
             
         return ifNode(condition, thenResult, elseResult)
+        
+        
+    def whileStatement(self):
+        self.advance()
+        if self.current_token.type == TokenTypes.LPAREN:
+            self.advance()
+            condition = self.assignment()
+        if self.current_token.type == TokenTypes.RPAREN:
+            self.advance()
+            
+        thenBody = self.statementBlock()
+        
+        return whileNode(condition, thenBody)
+        
             
     def statementBlock(self):
-        resList = []
         if self.current_token.type != TokenTypes.LBRACE:
-            raise Lang_SyntaxError("Expected opening '('", self.current_token.line)
-        else:
-            self.advance()
+            raise Lang_SyntaxError("Expected opening '{'", self.current_token.line)
+            
+        self.advance()
+        resList = []
         
         while self.current_token.type != TokenTypes.RBRACE:
             result = self.statement()
             resList.append(result)
-        self.advance()
         
         if self.current_token.type != TokenTypes.RBRACE:
-            raise Lang_SyntaxError("Expected closing ')'", self.current_token.line)
+            raise Lang_SyntaxError("Expected closing '}'", self.current_token.line)
             
+        self.advance()   
         return Block(resList)
         
             
@@ -234,7 +277,7 @@ class Parser(object):
                 right = func()
                 left = BinOp(left, op_token, right)
         else:
-            pass
+            raise Lang_SyntaxError("Expected operator", self.current_token.line)
             
         return left
         
@@ -242,11 +285,7 @@ class Parser(object):
     def parse(self):
         res = self.program()
         return res
-                
-                
-        
-        
-        
+                    
         
 if __name__ == "__main__":
     while True:       

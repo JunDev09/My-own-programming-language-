@@ -5,6 +5,7 @@ KEYWORDS = {
     'or': TokenTypes.OR,
     'if': TokenTypes.IF,
     'else': TokenTypes.ELSE,
+    'while': TokenTypes.WHILE,
 }
 
 PUNCTUATION = {

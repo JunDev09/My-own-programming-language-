@@ -1,6 +1,7 @@
-from Parser.Parser import Num, Unary, BinOp, Boolean, String, Identifier, Assignment, Block, ifNode, Parser
+from Parser.Parser import Num, Unary, BinOp, Boolean, String, Identifier, Assignment, Block, ifNode, whileNode, TypeDeclaration, Parser
 from Lexer.Lexer import Lexer
 from Lexer.Tokens import TokenTypes
+from .TypeCheck import TypeChecker
 from Errors.ErrorClasses import Lang_RuntimeError
 
 class Interpreter():
@@ -76,6 +77,13 @@ class Interpreter():
                     return result
                 else:
                     return None
+                    
+                
+            case whileNode():
+                    condition = self.visit_node(node.condition)
+                    while condition:
+                        result = self.visit_node(node.thenBody)
+                        return result
                 
             case Block():
                 List = node.list
@@ -97,6 +105,13 @@ class Interpreter():
                         new_value = value
                 result = self.variables[node.name] = new_value
                 return result
+                
+            case TypeDeclaration():
+                value = self.visit_node(node.value)
+                TypeChecker.check(node.type_name, value)
+                result = self.variables[node.name] = value
+                return result
+                
                 
                 
 if __name__ == "__main__":

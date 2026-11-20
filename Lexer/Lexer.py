@@ -4,8 +4,8 @@ from .LexerTable import DATA_TYPE, SINGLE_OPS, BOOLEAN_WORDS, KEYWORDS, PARENTHE
 
 
 class Token(object):
-    def __init__(self, type, value, line):
-        self.type = type
+    def __init__(self, Datatype, value, line):
+        self.type = Datatype
         self.value = value
         self.line = line
     
@@ -173,7 +173,6 @@ class Lexer(object):
         
 if __name__ == "__main__":
     while True:
-        #print(Lexer("ab").peek(-1))
         text = input("\n>> ")
         
         if text == "exit":
